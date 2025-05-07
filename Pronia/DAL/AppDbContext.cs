@@ -11,4 +11,6 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Slider> Sliders { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<TagProducts> TagProducts { get; set; }
 }
