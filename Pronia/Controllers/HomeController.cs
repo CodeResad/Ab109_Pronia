@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pronia.DAL;
 using Pronia.Models;
+using Pronia.ViewModels.Home;
 
 namespace Pronia.Controllers;
 
@@ -22,9 +23,13 @@ public class HomeController : Controller
         
         List<Slider> sliders = await _context.Sliders.ToListAsync();
         
-        ViewData["Sliders"] = sliders;
+        HomeVm homeVm = new HomeVm()
+        {
+            Products = products,
+            Sliders = sliders
+        };
         
-        return View(products);
+        return View(homeVm);
     }
 
     public async Task<IActionResult> Detail(int? id)
@@ -34,7 +39,7 @@ public class HomeController : Controller
             return BadRequest();
         }
         
-        Product product = await _context.Products
+        Product? product = await _context.Products
             .Include(x=>x.Images)
             .Include(x=>x.Category)
             .FirstOrDefaultAsync(x => x.Id == id);

@@ -1,11 +1,11 @@
-@model List<Product>
+@model HomeVm
 
 <!-- Begin Slider Area -->
       <div class="slider-area">
         <!-- Main Slider -->
         <div class="swiper-container main-slider swiper-arrow with-bg_white">
           <div class="swiper-wrapper">
-            @foreach (var item in (List<Slider>)ViewData["Sliders"])
+            @foreach (var item in Model.Sliders)
             {
               <div class="swiper-slide animation-style-01">
                 <div
@@ -37,7 +37,7 @@
                           <div class="scene fill">
                             <div class="expand-width" data-depth="0.2">
                               <img
-                                src="~/assets/images/website-images//@item.SliderImgUrl"
+                                src="~/Upload/Slider/@item.SliderImgUrl"
                                 alt="Inner Image"
                               />
                             </div>
@@ -172,7 +172,7 @@
                   aria-labelledby="featured-tab"
                 >
                   <div class="product-item-wrap row">
-                    @foreach (var pro in Model)
+                    @foreach (var pro in Model.Products)
                     {
                       <div class="col-xl-3 col-md-4 col-sm-6">
                       <div class="product-item">

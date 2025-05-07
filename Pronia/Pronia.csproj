@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\Manage\" />
+      <Folder Include="wwwroot\Upload\Slider\" />
     </ItemGroup>
 
 </Project>
