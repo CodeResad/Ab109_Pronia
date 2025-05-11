@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pronia.Areas.Manage.ViewModels.Product;
@@ -7,6 +8,7 @@ using Pronia.Models;
 namespace Pronia.Areas.Manage.Controllers;
 
 [Area("Manage")]
+[Authorize(Roles = "Admin")]
 public class ProductController : Controller
 {
     AppDbContext _context;

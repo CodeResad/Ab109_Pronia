@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pronia.DAL;
@@ -6,6 +7,7 @@ using Pronia.Models;
 namespace Pronia.Areas.Manage.Controllers;
 
 [Area("Manage")]
+[Authorize(Roles = "Admin")]
 public class CategoryController : Controller
 {
     AppDbContext _context;

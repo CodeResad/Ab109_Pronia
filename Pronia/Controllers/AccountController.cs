@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pronia.Models;
+using Pronia.Utils.Enums;
 using Pronia.ViewModels.Account;
 
 namespace Pronia.Controllers;
@@ -9,11 +10,13 @@ public class AccountController : Controller
 {
     UserManager<AppUser> _userManager;
     SignInManager<AppUser> _signInManager;
+    RoleManager<IdentityRole> _roleManager;
 
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
     }
     
     public IActionResult Index()
@@ -53,7 +56,52 @@ public class AccountController : Controller
             return View();
         }
         
-        await _signInManager.SignInAsync(appUser, true);
+        await _userManager.AddToRoleAsync(appUser, UserRoles.User.ToString());
+        
+        
+        return RedirectToAction("Login");
+    }
+
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginVm loginVm, string? ReturnUrl)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View();
+        }
+
+        AppUser user = await _userManager.FindByEmailAsync(loginVm.EmailOrUsername) ?? await _userManager.FindByNameAsync(loginVm.EmailOrUsername);
+
+        if (user == null)
+        {
+            ModelState.AddModelError("", "Invalid username or password.");
+            return View();
+        }
+        
+        var result = await _signInManager.CheckPasswordSignInAsync(user, loginVm.Password, true);
+        if (result.IsLockedOut)
+        {
+            ModelState.AddModelError("", "User account locked out.");
+            return View();
+        }
+
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError("", "Invalid username or password.");
+            return View();
+        }
+        
+        await _signInManager.SignInAsync(user, loginVm.RememberMe);
+
+        if (ReturnUrl != null)
+        {
+            return Redirect(ReturnUrl);
+        }
         
         return RedirectToAction("Index", "Home");
     }
@@ -61,6 +109,16 @@ public class AccountController : Controller
     public async Task<IActionResult> LogOut()
     {
         await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> CreateRoles()
+    {
+        foreach (var item in Enum.GetNames(typeof(UserRoles)))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(item));
+        }
+        
         return RedirectToAction("Index", "Home");
     }
 }
